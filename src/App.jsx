@@ -18,35 +18,49 @@ const faqs = [
 export default function App() {
 	return (
 		<div>
-			<Accordion data={faqs}/>
+			<Accordion data={faqs} />
 		</div>
 	);
 }
 
-function Accordion({data}) {
-	return (
-		<div className="accordion">
-			{data.map(((el, i)=> <AccordionItem key={i} number={Number(i)} title={el.title} text={el.text}/>))}
-		</div>
-	)
-}
-
-function AccordionItem({number, title, text}){
-	const [isOpen, setIsOpen] = useState(false);
-	function handleToggle(){
-		setIsOpen(!isOpen);
+function Accordion({ data }) {
+	const [currentOpen, setCurrentOpen] = useState(null);
+	function handleCurrentOpen(e) {
+		setCurrentOpen(e);
 	}
 
 	return (
-		<div className={`item ${isOpen ? 'open' : ''}`} onClick={handleToggle}>
-			<div className="number">{number < 9 ? `0${number+1}` : number+1}</div>
-			<div className="text">{title}</div>
-			<div className="icon">{isOpen ? '-' : '+'}</div>
-			{isOpen && (
-			<div className="content-box">
-				{text}
-			</div>
-			)}
+		<div className="accordion">
+			{data.map((el, i) => (
+				<AccordionItem
+					key={i}
+					number={Number(i)}
+					title={el.title}
+					currentOpen={currentOpen}
+					onOpen={handleCurrentOpen}
+				>
+					{el.text}
+				</AccordionItem>
+			))}
 		</div>
-	)
+	);
+}
+
+function AccordionItem({ number, title, children, currentOpen, onOpen }) {
+	const isOpen = number === currentOpen;
+
+	function handleToggle() {
+		onOpen(isOpen ? null : number);
+	}
+
+	return (
+		<div className={`item ${isOpen ? "open" : ""}`} onClick={handleToggle}>
+			<div className="number">
+				{number < 9 ? `0${number + 1}` : number + 1}
+			</div>
+			<div className="text">{title}</div>
+			<div className="icon">{isOpen ? "-" : "+"}</div>
+			{isOpen && <div className="content-box">{children}</div>}
+		</div>
+	);
 }
